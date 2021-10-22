@@ -20,14 +20,36 @@ $(document).ready(function(){
     updateTormentors(start, bosslen, boss);
 
     loadBossCheckboxes(boss);
-});
 
-$('#slotselect').change(function(){
-    var weeks = $('#slotselect').val();
+    $('input[type="checkbox"][id^="boss-cbox-"]').change(function(){
+        var id = this.id.match(/.*\-(\d+)/)[1];
+        var weeks = $('#slotselect').val();
+        console.log(id+' changed');
+        /*if(this.checked){
+            localStorage.setItem(id, 'checked');
+        } else {
+            localStorage.setItem(id, '');
+        }*/
+        localStorage.setItem(id, $(this).prop("checked") ? 'checked' : '');
+        updateTormentors(start, parseInt(weeks), boss);
+    });
 
-    $('#tormentors tbody').empty();
+    $('#select-all').change(function(){
+        var weeks = $('#slotselect').val();
+        var checked = $(this).prop("checked");
+        $('input[type="checkbox"][id^="boss-cbox-"]').prop('checked', checked);
+        for(let id in boss){
+            localStorage.setItem(id, checked ? 'checked' : '');
+        }
+        
+        updateTormentors(start, parseInt(weeks), boss);
+    });
 
-    updateTormentors(start, parseInt(weeks), boss);
+    $('#slotselect').change(function(){
+        var weeks = $('#slotselect').val();
+    
+        updateTormentors(start, parseInt(weeks), boss);
+    });
 });
 
 function toBossIndex(now, next, totaltime){
@@ -61,6 +83,7 @@ function buildBossArray(interval){
 }
 
 function updateTormentors(start, num, boss){
+    $('#tormentors tbody').empty();
     var now = new Date();
     now.setHours(now.getHours(), 0, 0,0);
 
@@ -102,8 +125,10 @@ function updateTormentors(start, num, boss){
 
         let h = nBoss.getHours();
         let btime = (nBoss.getMonth()+1) + '/' + nBoss.getDate() + ' '+ h%12 + ':00 ' + (h/12 < 1 ? 'AM' : 'PM');
+        let checked = localStorage.getItem(bindex) === 'checked';
 
-        $('#tormentors tbody').append('<tr><td>' + btime + '</td><td>' + boss[bindex] + '</td></tr>');
+        if(!checked)
+            $('#tormentors tbody').append('<tr><td>' + btime + '</td><td>' + boss[bindex] + '</td></tr>');
 
         nextBoss += 2;
     }
@@ -114,13 +139,15 @@ function loadBossCheckboxes(boss){
 
     for (let id in boss){
         let b = boss[id];
-        blist.append(bossCheckbox(id, b));
+        let checked = localStorage.getItem(id);
+        blist.append(bossCheckbox(id, b, checked));
     }
 }
 
-function bossCheckbox(id, boss){
+function bossCheckbox(id, boss, checked){
+    
     var checkbox = '<div class="form-check">';
-    checkbox += '<input class="form-check-input" type="checkbox" value="" id="boss-cbox-'+id+'"></input>';
+    checkbox += '<input class="form-check-input" type="checkbox" value="" id="boss-cbox-'+id+'" '+checked+'></input>';
     checkbox += '<label class="form-check-label" for="boss-cbox-'+id+'">';
     checkbox += boss;
     checkbox += '</label></div>';
