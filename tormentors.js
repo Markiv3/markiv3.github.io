@@ -6,6 +6,7 @@ var start = new Date(2021,9,22,1,0,0,0);
             var bosslen = Object.keys(boss).length;
 
             $('#timezone').append(getTimezone());
+            $('#slotselect').append('<option selected>'+bosslen+'</option>');
 
             for(let i = 0, j = bosslen+1; i+bosslen < bosslen * 2; i++){
                 $('#slotselect').append('<option>'+(j+i)+'</option>');
