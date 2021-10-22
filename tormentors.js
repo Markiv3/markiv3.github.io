@@ -138,11 +138,22 @@ function updateTormentors(start, num, boss){
 
 function loadBossCheckboxes(boss){
     var blist = $('#boss-list');
+    let entries = Object.entries(boss);
+    var sorted = entries.sort((a, b) => {
+        var nameA = a[1].toUpperCase();
+        var nameB = b[1].toUpperCase();
+        if (nameA < nameB) {
+            return -1;
+        }
+        if (nameA > nameB) {
+            return 1;
+        }
+        return 0;
+    });
 
-    for (let id in boss){
-        let b = boss[id];
-        let checked = localStorage.getItem(id);
-        blist.append(bossCheckbox(id, b, checked));
+    for (let e of sorted){
+        let checked = localStorage.getItem(e[0]);
+        blist.append(bossCheckbox(e[0], e[1], checked));
     }
 }
 
