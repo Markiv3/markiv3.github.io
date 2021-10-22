@@ -1,0 +1,19 @@
+{
+    "name": "Tormentors of Torghast Schedule",
+    "short_name": "tormentors_schedule",
+    "icons": [
+        {
+            "src": "/icon/android-chrome-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/icon/android-chrome-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "theme_color": "#2c2e30",
+    "background_color": "#2c2e30",
+    "display": "standalone"
+}
