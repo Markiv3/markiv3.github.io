@@ -15,7 +15,8 @@ $(document).ready(function(){
     for(const p in boss){
         $('#boss-select').append("<option value='"+p+"'>"+boss[p]+"</option>");
     }
-    var start = new Date(2021,9,22,1,0,0,0);
+    //var start = new Date(2021,9,22,1,0,0,0);
+    var start = new Date(Date.parse('2021-07-03T13:00:00Z'));
     
     updateTormentors(start, bosslen, boss);
 
@@ -24,19 +25,16 @@ $(document).ready(function(){
     $('input[type="checkbox"][id^="boss-cbox-"]').change(function(){
         var id = this.id.match(/.*\-(\d+)/)[1];
         var weeks = $('#slotselect').val();
-        console.log(id+' changed');
-        /*if(this.checked){
-            localStorage.setItem(id, 'checked');
-        } else {
-            localStorage.setItem(id, '');
-        }*/
+
         localStorage.setItem(id, $(this).prop("checked") ? 'checked' : '');
+
         updateTormentors(start, parseInt(weeks), boss);
     });
 
     $('#select-all').change(function(){
         var weeks = $('#slotselect').val();
         var checked = $(this).prop("checked");
+
         $('input[type="checkbox"][id^="boss-cbox-"]').prop('checked', checked);
         for(let id in boss){
             localStorage.setItem(id, checked ? 'checked' : '');
@@ -72,8 +70,11 @@ function getTimezone(){
 }
 
 function buildBossArray(interval){
-    var barray = ['Sentinel Pyrophus', 'Mugrem the Soul Devourer', 'Kazj The Sentinel', 'Promathiz', 'Sentinel Shakorzeth', 'Intercessor Razzra', 'Gruukuuek the Elder', 'Algel the Haunter', 
-        'Malleus Grakizz', 'Gralebboih', 'The Mass of Souls', 'Manifestation of Pain', 'Versya the Damned', 'Zul\'gath the Flayer', 'Golmak The Monstrosity'];
+    //var barray = ['Sentinel Pyrophus', 'Mugrem the Soul Devourer', 'Kazj The Sentinel', 'Promathiz', 'Sentinel Shakorzeth', 'Intercessor Razzra', 'Gruukuuek the Elder', 'Algel the Haunter', 
+    //    'Malleus Grakizz', 'Gralebboih', 'The Mass of Souls', 'Manifestation of Pain', 'Versya the Damned', 'Zul\'gath the Flayer', 'Golmak The Monstrosity'];
+    var barray = ['Algel the Haunter', 'Malleus Grakizz', 'Gralebboih', 'The Mass of Souls', 'Manifestation of Pain', 'Versya the Damned', 'Zul\'gath the Flayer', 'Golmak The Monstrosity','Sentinel Pyrophus', 'Mugrem the Soul Devourer', 
+    'Kazj The Sentinel', 'Promathiz', 'Sentinel Shakorzeth', 'Intercessor Razzra', 'Gruukuuek the Elder']; 
+      
     var a = {};
     index = 0;
     for(let i = 0, b = 0 ; i < barray.length; i++, b+=interval){
@@ -90,19 +91,19 @@ function updateTormentors(start, num, boss){
     var next = new Date();
     next.setHours(next.getHours(), 0, 0,0);
 
-    var hour = now.getUTCHours();
+    var hour = now.getHours();
 
     if(hour % 2 == 0){
         hour++;
-        next.setUTCHours(hour);
+        next.setHours(hour);
     } else if (hour % 2 == 1){
         hour += 2;
         
         if(hour > 24){
-            next.setUTCDate(next.getUTCDate() + 1);
-            next.setUTCHours(1);
+            next.setDate(next.getDate() + 1);
+            next.setHours(1);
         } else {
-            next.setUTCHours(hour);
+            next.setHours(hour);
         }
     }
 
@@ -113,13 +114,13 @@ function updateTormentors(start, num, boss){
     for(let i = 0; i < num; i++){
         let bindex = nextBoss % totaltime;
         if(i > 0){
-            let h = nBoss.getUTCHours();
+            let h = nBoss.getHours();
 
             if(h + 2 > 23){
-                nBoss.setUTCDate(nBoss.getUTCDate() + 1);
-                nBoss.setUTCHours((h+2)%24);
+                nBoss.setDate(nBoss.getDate() + 1);
+                nBoss.setHours((h+2)%24);
             } else {
-                nBoss.setUTCHours(h+2);
+                nBoss.setHours(h+2);
             }
         }
 
@@ -127,6 +128,7 @@ function updateTormentors(start, num, boss){
         let btime = (nBoss.getMonth()+1) + '/' + nBoss.getDate() + ' '+ h%12 + ':00 ' + (h/12 < 1 ? 'AM' : 'PM');
         let checked = localStorage.getItem(bindex) === 'checked';
 
+        console.log(nBoss.toLocaleString());
         if(!checked)
             $('#tormentors tbody').append('<tr><td>' + btime + '</td><td>' + boss[bindex] + '</td></tr>');
 
