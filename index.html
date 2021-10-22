@@ -11,14 +11,37 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
     <script src="js/bootstrap-timepicker/js/bootstrap-timepicker.min.js"></script>
     <style>
-        
+        body {
+            background-color: #2c2e30;
+        }
+        h2#t-title {
+            color: #fff;
+        }
+        table#tormentors thead th {
+            text-align: center;
+        }
     </style>
 </head>
 <body>
+    
     <div id='content' class='container'>
         <div class='row'>
-            <div class='col-6 mx-auto'>
-                <table class="table" id='tormentors'>
+            <h2 id='t-title' class='text-center'>Tormentors of Torghast Schedule</h2>
+        </div>
+        <div class='row justify-content-center'>
+            <div class='col-3'>
+                <div class="input-group mb-3">
+                    <label class="input-group-text" for="slotselect"># Slots</label>
+                    <select class="form-select" id="slotselect">
+                      <option selected>12</option>
+                    </select>
+                  </div>
+            </div>
+        </div>
+        
+        <div class='row'>
+            <div class='col-4 mx-auto'>
+                <table class="table table-dark table-striped table-hover" id='tormentors'>
                     <thead>
                         <tr>
                             <th scole='col'>Date/Time</th>
@@ -30,7 +53,6 @@
                 </table>
             </div>
         </div>
-        
     </div>
     <script>
         function toBossIndex(now, next){
@@ -41,55 +63,73 @@
                 return false;
             }
         }
-
+        var start = new Date(2021,9,22,1,0,0,0);
         var boss = {4:'Kazj The Sentinel', 6:'Promathiz', 8:'Sentinel Shakorzeth', 10:'Intercessor Razzra', 12:'Gruukuuek the Elder', 14:'Algel the Haunter', 16:'Malleus Grakizz', 18:'Gralebboih', 
                     20:'The Mass of Souls', 22:'Manifestation of Pain', 24:'Versya the Damned', 26:'Zul\'gath the Flayer', 28:'Golmak The Monstrosity', 0:'Sentinel Pyrophus', 2:'Mugrem the Soul Devourer'};
-        for(const p in boss){
-            $('#boss-select').append("<option value='"+p+"'>"+boss[p]+"</option>");
-        }
-        var start = new Date(2021,9,22,1,0,0,0);
-        $('#next-time').timepicker();
-        
-        var now = new Date();
-        now.setHours(now.getHours(), 0, 0,0);
-        var next = new Date();
-        next.setHours(next.getHours(), 0, 0,0);
-        var hour = now.getUTCHours();
-        if(hour % 2 == 0){
-            hour++;
-            next.setUTCHours(hour);
-        } else if (hour % 2 == 1){
-            hour += 2;
-            // Next day
-            if(hour > 24){
-                next.setUTCDate(next.getUTCDate() + 1);
-                next.setUTCHours(1);
-            } else {
-                next.setUTCHours(hour);
-            }
-        }
-        var diff = next.valueOf()-start.valueOf();
-        var nextBoss = toBossIndex(start, next);
-        var nBoss = next;
-        for(let i = 0; i < 12; i++){
-            let bindex = nextBoss%30;
-            if(i > 0){
-                let h = nBoss.getUTCHours();
-                if(h + 2 > 23){
-                    nBoss.setUTCDate(nBoss.getUTCDate() + 1);
-                    nBoss.setUTCHours((h+2)%24);
-                } else {
-                    nBoss.setUTCHours(h+2);
-                }
+        $(document).ready(function(){
+            var w = 13;
+            for(let i = 0; i+w <= 24; i++){
+                $('#slotselect').append('<option>'+(w+i)+'</option>');
             }
 
-            let h = nBoss.getHours();
-            let btime = (nBoss.getMonth()+1) + '/'+ nBoss.getDate()+' '+h%12 +':00 '+(h/12 > 0 ? 'AM' : 'PM');
-            var row = '<tr>';
-                row += '<td>'+btime+'</td>';
-                row += '<td>'+boss[bindex]+'</td></tr>';
-            $('#tormentors tbody').append('<tr><td>'+btime+'</td><td>'+boss[bindex]+'</td></tr>');
-            nextBoss += 2;
+            
+            for(const p in boss){
+                $('#boss-select').append("<option value='"+p+"'>"+boss[p]+"</option>");
+            }
+            var start = new Date(2021,9,22,1,0,0,0);
+            
+            updateTormentors(start, 12, boss);
+        });
+
+        $('#slotselect').change(function(){
+            var weeks = $('#slotselect').val();
+            $('#tormentors tbody').empty();
+            updateTormentors(start, parseInt(weeks), boss);
+        });
+        
+        function updateTormentors(start, num, boss){
+            var now = new Date();
+            now.setHours(now.getHours(), 0, 0,0);
+            var next = new Date();
+            next.setHours(next.getHours(), 0, 0,0);
+            var hour = now.getUTCHours();
+            if(hour % 2 == 0){
+                hour++;
+                next.setUTCHours(hour);
+            } else if (hour % 2 == 1){
+                hour += 2;
+                // Next day
+                if(hour > 24){
+                    next.setUTCDate(next.getUTCDate() + 1);
+                    next.setUTCHours(1);
+                } else {
+                    next.setUTCHours(hour);
+                }
+            }
+            var diff = next.valueOf()-start.valueOf();
+            var nextBoss = toBossIndex(start, next);
+            var nBoss = next;
+            for(let i = 0; i < num; i++){
+                let bindex = nextBoss%30;
+                if(i > 0){
+                    let h = nBoss.getUTCHours();
+                    // Next Day
+                    if(h + 2 > 23){
+                        nBoss.setUTCDate(nBoss.getUTCDate() + 1);
+                        nBoss.setUTCHours((h+2)%24);
+                    } else {
+                        nBoss.setUTCHours(h+2);
+                    }
+                }
+
+                let h = nBoss.getHours();
+                let btime = (nBoss.getMonth()+1) + '/'+ nBoss.getDate()+' '+h%12 +':00 '+(h/12 > 0 ? 'AM' : 'PM');
+                var row = '<tr>';
+                    row += '<td>'+btime+'</td>';
+                    row += '<td>'+boss[bindex]+'</td></tr>';
+                $('#tormentors tbody').append('<tr><td>'+btime+'</td><td>'+boss[bindex]+'</td></tr>');
+                nextBoss += 2;
+            }
         }
     </script>
 </body>
