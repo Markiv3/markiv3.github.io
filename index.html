@@ -53,8 +53,8 @@
     </div>
     <script>
         var start = new Date(2021,9,22,1,0,0,0);
-        var boss = {4:'Kazj The Sentinel', 6:'Promathiz', 8:'Sentinel Shakorzeth', 10:'Intercessor Razzra', 12:'Gruukuuek the Elder', 14:'Algel the Haunter', 16:'Malleus Grakizz', 18:'Gralebboih', 
-                    20:'The Mass of Souls', 22:'Manifestation of Pain', 24:'Versya the Damned', 26:'Zul\'gath the Flayer', 28:'Golmak The Monstrosity', 0:'Sentinel Pyrophus', 2:'Mugrem the Soul Devourer'};
+        var interval = 2;
+        var boss = buildBossArray(interval);
 
         $(document).ready(function(){
             var w = 13;
@@ -81,10 +81,10 @@
             updateTormentors(start, parseInt(weeks), boss);
         });
 
-        function toBossIndex(now, next){
+        function toBossIndex(now, next, totaltime){
             if(now > 0 && next > 0 && next >= now){
                 let diff = next.valueOf()-now.valueOf();
-                return ((diff/1000)/60)/60 % 30;
+                return ((diff/1000)/60)/60 % totaltime;
             } else {
                 return false;
             }
@@ -98,6 +98,17 @@
                 ts += z.charAt(0);
             }
             return ts;
+        }
+
+        function buildBossArray(interval){
+            var barray = ['Sentinel Pyrophus', 'Mugrem the Soul Devourer', 'Kazj The Sentinel', 'Promathiz', 'Sentinel Shakorzeth', 'Intercessor Razzra', 'Gruukuuek the Elder', 'Algel the Haunter', 
+                'Malleus Grakizz', 'Gralebboih', 'The Mass of Souls', 'Manifestation of Pain', 'Versya the Damned', 'Zul\'gath the Flayer', 'Golmak The Monstrosity'];
+            var a = {};
+            index = 0;
+            for(let i = 0, b = 0 ; i < barray.length; i++, b+=interval){
+                a[b] = barray[i];
+            }
+            return a;
         }
         
         function updateTormentors(start, num, boss){
@@ -123,11 +134,13 @@
                 }
             }
 
-            var nextBoss = toBossIndex(start, next);
+            var totaltime = Object.keys(boss).length * 2;
+            var nextBoss = toBossIndex(start, next, totaltime);
             var nBoss = next;
 
             for(let i = 0; i < num; i++){
-                let bindex = nextBoss%30;
+                let bindex = nextBoss % totaltime;
+                console.log(nextBoss);
                 if(i > 0){
                     let h = nBoss.getUTCHours();
 
