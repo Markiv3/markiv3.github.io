@@ -1,0 +1,97 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Title of the document</title>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="js/bootstrap-timepicker/css/bootstrap-timepicker.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.6.1/font/bootstrap-icons.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <script src="js/bootstrap-timepicker/js/bootstrap-timepicker.min.js"></script>
+    <style>
+        
+    </style>
+</head>
+<body>
+    <div id='content' class='container'>
+        <div class='row'>
+            <div class='col-6 mx-auto'>
+                <table class="table" id='tormentors'>
+                    <thead>
+                        <tr>
+                            <th scole='col'>Date/Time</th>
+                            <th scole='col'>Tormentor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+    </div>
+    <script>
+        function toBossIndex(now, next){
+            if(now > 0 && next > 0 && next >= now){
+                let diff = next.valueOf()-now.valueOf();
+                return ((diff/1000)/60)/60 % 30;
+            } else {
+                return false;
+            }
+        }
+
+        var boss = {4:'Kazj The Sentinel', 6:'Promathiz', 8:'Sentinel Shakorzeth', 10:'Intercessor Razzra', 12:'Gruukuuek the Elder', 14:'Algel the Haunter', 16:'Malleus Grakizz', 18:'Gralebboih', 
+                    20:'The Mass of Souls', 22:'Manifestation of Pain', 24:'Versya the Damned', 26:'Zul\'gath the Flayer', 28:'Golmak The Monstrosity', 0:'Sentinel Pyrophus', 2:'Mugrem the Soul Devourer'};
+        for(const p in boss){
+            $('#boss-select').append("<option value='"+p+"'>"+boss[p]+"</option>");
+        }
+        var start = new Date(2021,9,22,1,0,0,0);
+        $('#next-time').timepicker();
+        
+        var now = new Date();
+        now.setHours(now.getHours(), 0, 0,0);
+        var next = new Date();
+        next.setHours(next.getHours(), 0, 0,0);
+        var hour = now.getUTCHours();
+        if(hour % 2 == 0){
+            hour++;
+            next.setUTCHours(hour);
+        } else if (hour % 2 == 1){
+            hour += 2;
+            // Next day
+            if(hour > 24){
+                next.setUTCDate(next.getUTCDate() + 1);
+                next.setUTCHours(1);
+            } else {
+                next.setUTCHours(hour);
+            }
+        }
+        var diff = next.valueOf()-start.valueOf();
+        var nextBoss = toBossIndex(start, next);
+        var nBoss = next;
+        for(let i = 0; i < 12; i++){
+            let bindex = nextBoss%30;
+            if(i > 0){
+                let h = nBoss.getUTCHours();
+                if(h + 2 > 23){
+                    nBoss.setUTCDate(nBoss.getUTCDate() + 1);
+                    nBoss.setUTCHours((h+2)%24);
+                } else {
+                    nBoss.setUTCHours(h+2);
+                }
+            }
+
+            let h = nBoss.getHours();
+            let btime = (nBoss.getMonth()+1) + '/'+ nBoss.getDate()+' '+h%12 +':00 '+(h/12 > 0 ? 'AM' : 'PM');
+            var row = '<tr>';
+                row += '<td>'+btime+'</td>';
+                row += '<td>'+boss[bindex]+'</td></tr>';
+            $('#tormentors tbody').append('<tr><td>'+btime+'</td><td>'+boss[bindex]+'</td></tr>');
+            nextBoss += 2;
+        }
+    </script>
+</body>
+
+</html>
