@@ -86,24 +86,24 @@ function buildBossArray(interval){
 function updateTormentors(start, num, boss){
     $('#tormentors tbody').empty();
     var now = new Date();
-    now.setHours(now.getHours(), 0, 0,0);
+    now.setUTCHours(now.getUTCHours(), 0, 0,0);
 
     var next = new Date();
-    next.setHours(next.getHours(), 0, 0,0);
+    next.setUTCHours(next.getUTCHours(), 0, 0,0);
 
-    var hour = now.getHours();
+    var hour = now.getUTCHours();
 
     if(hour % 2 == 0){
         hour++;
-        next.setHours(hour);
+        next.setUTCHours(hour);
     } else if (hour % 2 == 1){
         hour += 2;
         
         if(hour > 24){
-            next.setDate(next.getDate() + 1);
-            next.setHours(1);
+            next.setUTCDate(next.getUTCDate() + 1);
+            next.setUTCHours(1);
         } else {
-            next.setHours(hour);
+            next.setUTCHours(hour);
         }
     }
 
@@ -114,18 +114,19 @@ function updateTormentors(start, num, boss){
     for(let i = 0; i < num; i++){
         let bindex = nextBoss % totaltime;
         if(i > 0){
-            let h = nBoss.getHours();
+            let h = nBoss.getUTCHours();
 
             if(h + 2 > 23){
-                nBoss.setDate(nBoss.getDate() + 1);
-                nBoss.setHours((h+2)%24);
+                nBoss.setUTCDate(nBoss.getUTCDate() + 1);
+                nBoss.setUTCHours((h+2)%24);
             } else {
-                nBoss.setHours(h+2);
+                nBoss.setUTCHours(h+2);
             }
         }
 
-        let h = nBoss.getHours();
-        let btime = (nBoss.getMonth()+1) + '/' + nBoss.getDate() + ' '+ h%12 + ':00 ' + (h/12 < 1 ? 'AM' : 'PM');
+        let h = nBoss.getUTCHours();
+        var options = {month:'numeric', day:'2-digit', year: '2-digit', hour: 'numeric', minute:'numeric'};
+        let btime = nBoss.toLocaleString(undefined, options);
         let checked = localStorage.getItem(bindex) === 'checked';
 
         console.log(nBoss.toLocaleString());
