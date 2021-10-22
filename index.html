@@ -41,7 +41,7 @@
                 <table class="table table-dark table-striped table-hover" id='tormentors'>
                     <thead>
                         <tr>
-                            <th scole='col'>Date/Time</th>
+                            <th scole='col'>Date/Time (<span id='timezone'></span>)</th>
                             <th scole='col'>Tormentor</th>
                         </tr>
                     </thead>
@@ -59,9 +59,12 @@
         $(document).ready(function(){
             var w = 13;
 
+            $('#timezone').append(getTimezone());
+
             for(let i = 0; i+w <= 24; i++){
                 $('#slotselect').append('<option>'+(w+i)+'</option>');
             }
+
             for(const p in boss){
                 $('#boss-select').append("<option value='"+p+"'>"+boss[p]+"</option>");
             }
@@ -85,6 +88,16 @@
             } else {
                 return false;
             }
+        }
+
+        function getTimezone(){
+            var tzstring = new Date().toString().match(/\(([A-Za-z\s].*)\)/)[1];
+            var tarray = tzstring.split(' ');
+            var ts = '';
+            for (let z of tarray){
+                ts += z.charAt(0);
+            }
+            return ts;
         }
         
         function updateTormentors(start, num, boss){
@@ -117,7 +130,7 @@
                 let bindex = nextBoss%30;
                 if(i > 0){
                     let h = nBoss.getUTCHours();
-                    
+
                     if(h + 2 > 23){
                         nBoss.setUTCDate(nBoss.getUTCDate() + 1);
                         nBoss.setUTCHours((h+2)%24);
