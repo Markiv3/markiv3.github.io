@@ -30,7 +30,7 @@
                 <div class="input-group mb-3">
                     <label class="input-group-text" for="slotselect"># Slots</label>
                     <select class="form-select" id="slotselect">
-                      <option selected>12</option>
+                      <option selected>15</option>
                     </select>
                   </div>
             </div>
@@ -57,12 +57,12 @@
         var boss = buildBossArray(interval);
 
         $(document).ready(function(){
-            var w = 13;
+            var bosslen = Object.keys(boss).length;
 
             $('#timezone').append(getTimezone());
 
-            for(let i = 0; i+w <= 24; i++){
-                $('#slotselect').append('<option>'+(w+i)+'</option>');
+            for(let i = 0, j = bosslen+1; i+bosslen < bosslen * 2; i++){
+                $('#slotselect').append('<option>'+(j+i)+'</option>');
             }
 
             for(const p in boss){
@@ -70,7 +70,7 @@
             }
             var start = new Date(2021,9,22,1,0,0,0);
             
-            updateTormentors(start, 12, boss);
+            updateTormentors(start, bosslen, boss);
         });
 
         $('#slotselect').change(function(){
