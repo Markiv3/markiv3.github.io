@@ -52,24 +52,16 @@
         </div>
     </div>
     <script>
-        function toBossIndex(now, next){
-            if(now > 0 && next > 0 && next >= now){
-                let diff = next.valueOf()-now.valueOf();
-                return ((diff/1000)/60)/60 % 30;
-            } else {
-                return false;
-            }
-        }
         var start = new Date(2021,9,22,1,0,0,0);
         var boss = {4:'Kazj The Sentinel', 6:'Promathiz', 8:'Sentinel Shakorzeth', 10:'Intercessor Razzra', 12:'Gruukuuek the Elder', 14:'Algel the Haunter', 16:'Malleus Grakizz', 18:'Gralebboih', 
                     20:'The Mass of Souls', 22:'Manifestation of Pain', 24:'Versya the Damned', 26:'Zul\'gath the Flayer', 28:'Golmak The Monstrosity', 0:'Sentinel Pyrophus', 2:'Mugrem the Soul Devourer'};
+
         $(document).ready(function(){
             var w = 13;
+
             for(let i = 0; i+w <= 24; i++){
                 $('#slotselect').append('<option>'+(w+i)+'</option>');
             }
-
-            
             for(const p in boss){
                 $('#boss-select').append("<option value='"+p+"'>"+boss[p]+"</option>");
             }
@@ -80,22 +72,36 @@
 
         $('#slotselect').change(function(){
             var weeks = $('#slotselect').val();
+
             $('#tormentors tbody').empty();
+
             updateTormentors(start, parseInt(weeks), boss);
         });
+
+        function toBossIndex(now, next){
+            if(now > 0 && next > 0 && next >= now){
+                let diff = next.valueOf()-now.valueOf();
+                return ((diff/1000)/60)/60 % 30;
+            } else {
+                return false;
+            }
+        }
         
         function updateTormentors(start, num, boss){
             var now = new Date();
             now.setHours(now.getHours(), 0, 0,0);
+
             var next = new Date();
             next.setHours(next.getHours(), 0, 0,0);
+
             var hour = now.getUTCHours();
+
             if(hour % 2 == 0){
                 hour++;
                 next.setUTCHours(hour);
             } else if (hour % 2 == 1){
                 hour += 2;
-                // Next day
+                
                 if(hour > 24){
                     next.setUTCDate(next.getUTCDate() + 1);
                     next.setUTCHours(1);
@@ -103,14 +109,15 @@
                     next.setUTCHours(hour);
                 }
             }
-            var diff = next.valueOf()-start.valueOf();
+
             var nextBoss = toBossIndex(start, next);
             var nBoss = next;
+
             for(let i = 0; i < num; i++){
                 let bindex = nextBoss%30;
                 if(i > 0){
                     let h = nBoss.getUTCHours();
-                    // Next Day
+                    
                     if(h + 2 > 23){
                         nBoss.setUTCDate(nBoss.getUTCDate() + 1);
                         nBoss.setUTCHours((h+2)%24);
@@ -120,15 +127,13 @@
                 }
 
                 let h = nBoss.getHours();
-                let btime = (nBoss.getMonth()+1) + '/'+ nBoss.getDate()+' '+h%12 +':00 '+(h/12 > 0 ? 'AM' : 'PM');
-                var row = '<tr>';
-                    row += '<td>'+btime+'</td>';
-                    row += '<td>'+boss[bindex]+'</td></tr>';
-                $('#tormentors tbody').append('<tr><td>'+btime+'</td><td>'+boss[bindex]+'</td></tr>');
+                let btime = (nBoss.getMonth()+1) + '/' + nBoss.getDate() + ' '+ h%12 + ':00 ' + (h/12 < 1 ? 'AM' : 'PM');
+
+                $('#tormentors tbody').append('<tr><td>' + btime + '</td><td>' + boss[bindex] + '</td></tr>');
+
                 nextBoss += 2;
             }
         }
     </script>
 </body>
-
 </html>
