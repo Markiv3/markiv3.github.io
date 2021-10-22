@@ -129,7 +129,6 @@ function updateTormentors(start, num, boss){
         let btime = nBoss.toLocaleString(undefined, options);
         let checked = localStorage.getItem(bindex) === 'checked';
 
-        console.log(nBoss.toLocaleString());
         if(!checked)
             $('#tormentors tbody').append('<tr><td>' + btime + '</td><td>' + boss[bindex] + '</td></tr>');
 
