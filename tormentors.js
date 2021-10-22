@@ -111,7 +111,7 @@ function updateTormentors(start, num, boss){
     var nextBoss = toBossIndex(start, next, totaltime);
     var nBoss = next;
 
-    for(let i = 0; i < num; i++){
+    for(let i = 0; i < num; ){
         let bindex = nextBoss % totaltime;
         if(i > 0){
             let h = nBoss.getUTCHours();
@@ -129,8 +129,10 @@ function updateTormentors(start, num, boss){
         let btime = nBoss.toLocaleString(undefined, options);
         let checked = localStorage.getItem(bindex) === 'checked';
 
-        if(!checked)
+        if(!checked){
             $('#tormentors tbody').append('<tr><td>' + btime + '</td><td>' + boss[bindex] + '</td></tr>');
+            i++;
+        }
 
         nextBoss += 2;
     }
