@@ -1,4 +1,4 @@
-var start = new Date(2021,9,22,1,0,0,0);
+var start = new Date(Date.parse('2021-07-03T13:00:00Z'));
 var interval = 2;
 var boss = buildBossArray(interval);
 
@@ -111,7 +111,7 @@ function updateTormentors(start, num, boss){
     var nextBoss = toBossIndex(start, next, totaltime);
     var nBoss = next;
 
-    for(let i = 0; i < num; ){
+    for(let i = 0, j=0; j < num; i++){
         let bindex = nextBoss % totaltime;
         if(i > 0){
             let h = nBoss.getUTCHours();
@@ -128,13 +128,12 @@ function updateTormentors(start, num, boss){
         var options = {month:'numeric', day:'2-digit', year: '2-digit', hour: 'numeric', minute:'numeric'};
         let btime = nBoss.toLocaleString(undefined, options);
         let checked = localStorage.getItem(bindex) === 'checked';
-
+        
         if(!checked){
             $('#tormentors tbody').append('<tr><td>' + btime + '</td><td>' + boss[bindex] + '</td></tr>');
-            i++;
+            j++;
         }
-
-        nextBoss += 2;
+        nextBoss += interval;
     }
 }
 
